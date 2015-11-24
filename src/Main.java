@@ -2,11 +2,11 @@ import java.util.ArrayList;
 
 public class Main {
 	
-	int amount = 1000;
+	int amount = 1000000;
 	ArrayList<Task> tasks;
 	
 	public Main() {
-		initTasks(2);
+		initTasks(1);
 	}
 	
 	public void initTasks(int num) {
@@ -16,17 +16,35 @@ public class Main {
 			Task task = new Task(i+1, amount / num);
 			
 			tasks.add(task);
-			
+		}
+		
+		for(Task task : tasks) {
 			task.start();
 		}
 	}
 	
-	public void onTaskFinished() {
+	public boolean onTaskFinished() {
 		if(isAllTasksDone()) {
+			long min = Long.MAX_VALUE, max = Long.MIN_VALUE;
+			
 			for(Task task : tasks) {
+				if(task.startTime < min) {
+					min = task.startTime;
+				}
+				
+				if(task.finishTime > max) {
+					max = task.finishTime;
+				}
+				
 				System.out.println("Start : " + task.startTime + ", Finish : " + task.finishTime + ", Diff : " + (task.finishTime - task.startTime));
 			}
+			
+			System.out.println("Min : " + min + ", Max : " + max + ", Diff : " + (max - min));
+			
+			return true;
 		}
+		
+		return false;
 	}
 	
 	public boolean isAllTasksDone() {
@@ -54,7 +72,7 @@ public class Main {
 		long startTime, finishTime = 0;
 		
 		public Task(int param, int num) {
-			setDaemon(true);
+			//setDaemon(true);
 			
 			this.param = param;
 			this.num = num;
@@ -73,7 +91,11 @@ public class Main {
 			
 			isDone = true;
 			
-			onTaskFinished();
+			if(onTaskFinished()) {
+				database.clear();// 이건 마지막 1번만 되면 된다.
+			}
+			
+			database.release();// 여기도 일단 시간에서 빼둔다.
 		}
 		
 		public boolean isDone() {

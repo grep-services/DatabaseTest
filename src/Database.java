@@ -37,6 +37,16 @@ public class Database {
 		}
 	}
 	
+	public void clear() {
+		String sql = "delete from table_a;";
+		
+		try {
+			statement.executeUpdate(sql);
+		} catch (SQLException e) {
+			printException(e);
+		}
+	}
+	
 	public void init() {
 		try {
 			Class.forName(driver);
